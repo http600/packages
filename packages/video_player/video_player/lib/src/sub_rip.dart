@@ -30,7 +30,7 @@ List<Caption> _parseCaptionsFromSubRipString(String file) {
   final List<Caption> captions = <Caption>[];
   for (final List<String> captionLines in _readSubRipFile(file)) {
     if (captionLines.length < 3) {
-      break;
+      continue;
     }
 
     final int captionNumber = int.parse(captionLines[0]);
@@ -120,7 +120,7 @@ List<List<String>> _readSubRipFile(String file) {
       currentCaption.add(line);
     }
 
-    if (isLineBlank || lineIndex == lines.length - 1) {
+    if ((isLineBlank || lineIndex == lines.length - 1) && currentCaption.isNotEmpty) {
       captionStrings.add(currentCaption);
       currentCaption = <String>[];
     }
