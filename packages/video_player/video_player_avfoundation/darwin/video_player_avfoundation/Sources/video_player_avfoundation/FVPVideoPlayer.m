@@ -37,7 +37,10 @@ static void *rateContext = &rateContext;
   }
   AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
   AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:urlAsset];
-  item.preferredForwardBufferDuration = 10;
+
+  // Hardcode preferredForwardBufferDuration to 10 seconds
+  item.preferredForwardBufferDuration = 10.0;
+
   return [self initWithPlayerItem:item avFactory:avFactory registrar:registrar];
 }
 
