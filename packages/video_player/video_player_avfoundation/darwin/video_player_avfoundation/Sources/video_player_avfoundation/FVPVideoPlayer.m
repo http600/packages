@@ -39,7 +39,8 @@ static void *rateContext = &rateContext;
   AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:urlAsset];
 
   // Hardcode preferredForwardBufferDuration to 10 seconds
-  item.preferredForwardBufferDuration = 10.0;
+  item.preferredForwardBufferDuration = 1.0;
+  item.canUseNetworkResourcesForLiveStreamingWhilePaused = false;
 
   return [self initWithPlayerItem:item avFactory:avFactory registrar:registrar];
 }
@@ -53,7 +54,8 @@ static void *rateContext = &rateContext;
   _registrar = registrar;
 
   // Hardcode preferredForwardBufferDuration to 10 seconds
-  item.preferredForwardBufferDuration = 10.0;
+  item.preferredForwardBufferDuration = 1.0;
+  item.canUseNetworkResourcesForLiveStreamingWhilePaused = false;
 
   AVAsset *asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
@@ -283,7 +285,8 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)updatePlayingState {
   AVPlayerItem *item = self.player.currentItem;
   // Hardcode preferredForwardBufferDuration to 10 seconds
-  item.preferredForwardBufferDuration = 10.0;
+  item.preferredForwardBufferDuration = 1.0;
+  item.canUseNetworkResourcesForLiveStreamingWhilePaused = false;
 
   if (!_isInitialized) {
     return;
