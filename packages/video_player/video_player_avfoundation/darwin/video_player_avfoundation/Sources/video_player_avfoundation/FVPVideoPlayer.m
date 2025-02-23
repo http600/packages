@@ -37,10 +37,6 @@ static void *rateContext = &rateContext;
   }
   AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
   AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:urlAsset];
-
-  item.canUseNetworkResourcesForLiveStreamingWhilePaused = false;
-  item.preferredForwardBufferDuration = 10.0;
-
   return [self initWithPlayerItem:item avFactory:avFactory registrar:registrar];
 }
 
@@ -279,7 +275,8 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)updatePlayingState {
   AVPlayerItem *item = self.player.currentItem;
-
+  item.canUseNetworkResourcesForLiveStreamingWhilePaused = false;
+  item.preferredForwardBufferDuration = 10.0;
   if (!_isInitialized) {
     return;
   }
