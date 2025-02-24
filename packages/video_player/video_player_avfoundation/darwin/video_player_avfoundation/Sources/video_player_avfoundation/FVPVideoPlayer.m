@@ -48,6 +48,10 @@ static void *rateContext = &rateContext;
 
   _registrar = registrar;
 
+  // Configure buffering parameters
+  item.canUseNetworkResourcesForLiveStreamingWhilePaused = false;
+  item.preferredForwardBufferDuration = 10.0;
+
   AVAsset *asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
     if ([asset statusOfValueForKey:@"tracks" error:nil] == AVKeyValueStatusLoaded) {
@@ -274,9 +278,6 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)updatePlayingState {
-  AVPlayerItem *item = self.player.currentItem;
-  item.canUseNetworkResourcesForLiveStreamingWhilePaused = false;
-  item.preferredForwardBufferDuration = 10.0;
   if (!_isInitialized) {
     return;
   }
