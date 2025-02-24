@@ -16,8 +16,13 @@ import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackParameters;
+import androidx.media3.common.util.Util;
+import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.LoadControl;
+import androidx.media3.exoplayer.upstream.DefaultAllocator;
 import io.flutter.view.TextureRegistry;
+
 
 final class VideoPlayer implements TextureRegistry.SurfaceProducer.Callback {
   @NonNull private final ExoPlayerProvider exoPlayerProvider;
@@ -47,9 +52,23 @@ final class VideoPlayer implements TextureRegistry.SurfaceProducer.Callback {
       @NonNull VideoPlayerOptions options) {
     return new VideoPlayer(
         () -> {
+          // Create a custom LoadControl to limit buffering
+          DefaultAllocator allocator = new DefaultAllocator(true, 1024 * 1024); // 1 MB buffer pool
+          LoadControl loadControl = new DefaultLoadControl.Builder()
+                  .setAllocator(allocator)
+                  .setBufferDurationsMs(
+                          10_000, // Minimum buffer duration (10 seconds)
+                          10_000, // Maximum buffer duration (10 seconds)
+                          2_500,  // Buffer for playback (2.5 seconds)
+                          5_000   // Buffer for playback after rebuffering (5 seconds)
+                  )
+                  .build();
+
+          // Create the ExoPlayer instance with the custom LoadControl
           ExoPlayer.Builder builder =
-              new ExoPlayer.Builder(context)
-                  .setMediaSourceFactory(asset.getMediaSourceFactory(context));
+                  new ExoPlayer.Builder(context)
+                          .setMediaSourceFactory(asset.getMediaSourceFactory(context))
+                          .setLoadControl(loadControl); // Set the custom LoadControl
           return builder.build();
         },
         events,
@@ -105,6 +124,23 @@ final class VideoPlayer implements TextureRegistry.SurfaceProducer.Callback {
   }
 
   private ExoPlayer createVideoPlayer() {
+    // Create a custom LoadControl to limit buffering
+    DefaultAllocator allocator = new DefaultAllocator(true, 1024 * 1024); // 1 MB buffer pool
+    LoadControl loadControl = new DefaultLoadControl.Builder()
+            .setAllocator(allocator)
+            .setBufferDurationsMs(
+                    10_000, // Minimum buffer duration (10 seconds)
+                    10_000, // Maximum buffer duration (10 seconds)
+                    2_500,  // Buffer for playback (2.5 seconds)
+                    5_000   // Buffer for playback after rebuffering (5 seconds)
+            )
+            .build();
+
+    // Create the ExoPlayer instance with the custom LoadControl
+    ExoPlayer exoPlayer = new ExoPlayer.Builder(flutterState.applicationContext)
+            .setLoadControl(loadControl)
+            .setMediaSourceFactory(asset.getMediaSourceFactory(flutterState.applicationContext))
+            .build();
     ExoPlayer exoPlayer = exoPlayerProvider.get();
     exoPlayer.setMediaItem(mediaItem);
     exoPlayer.prepare();
